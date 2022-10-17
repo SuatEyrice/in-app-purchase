@@ -42,7 +42,6 @@ iap.config({
     requestDefaults: { /* Please refer to the request module documentation here: https://www.npmjs.com/package/request#requestoptions-callback */ },
 
     /* Configurations for Amazon Store */
-    amazonAPIVersion: 2, // tells the module to use API version 2
     secret: 'abcdefghijklmnoporstuvwxyz', // this comes from Amazon
     // amazonValidationHost: http://localhost:8080/RVSSandbox, // Local sandbox URL for testing amazon sandbox receipts.
 
@@ -64,13 +63,6 @@ iap.config({
     googleRefToken: 'dddd...', // optional, for Google Play subscritions
     googleClientID: 'aaaa', // optional, for Google Play subscriptions
     googleClientSecret: 'bbbb', // optional, for Google Play subscriptions
-
-    /* Configurations for Roku */
-    rokuApiKey: 'aaaa...', // this comes from Roku Developer Dashboard
-
-    /* Configurations for Facebook (Payments Lite) */
-    facebookAppId: '112233445566778',
-    facebookAppSecret: 'cafebabedeadbeefabcdef0123456789',
 
     /* Configurations all platforms */
     test: true, // For Apple and Googl Play to force Sandbox validation only
@@ -155,35 +147,6 @@ The receipt should look like:
 }
 ```
 
-### Amazon
-
-An Amazon's receipt contains the following:
-
-- User ID: A string of Amazon Store user ID.
-
-- Receipt ID: A string of Amazon receipt.
-
-The module requires the above two components to be as a JSON object or a string
-
-```
-{
-    "userId": "User ID",
-    "receiptId": "Receipt ID"
-}
-```
-
-### Roku
-
-A Roku's receipt is a transaction ID string.
-
-### Windows
-
-A Windows' receipt is an XML string.
-
-### Facebook (Payments Lite)
-
-A Facebook's receipt is signed_request string of payment response.
-
 ## Validate Receipts From Multiple Applications
 
 You may feed different Google public key or Apple password etc to validate receipts of different applications with the same code:
@@ -257,18 +220,6 @@ iap.setup()
   });
 ```
 
-### Facebook (Payments Lite)
-
-```javascript
-iap.config(configObject);
-iap.setup()
-  .then(() => {
-    iap.validateOnce(receipt, appAccessToken).then(onSuccess).catch(onError);
-  })
-  .catch((error) => {
-    // error...
-  });
-```
 
 ## Helper Methods
 
@@ -403,13 +354,6 @@ To check expiration date or auto renewal status of an Android subscription, you 
 
 Now you are able to query for Android subscription status!
 
-## Amazon App Store Reference
-
-https://developer.amazon.com/docs/in-app-purchasing/iap-rvs-for-android-apps.html
-
-## Windows Signed XML
-
-in-app-purchase module supports the following algorithms:
 
 ### Canonicalization and Transformation Algorithms
 
@@ -426,12 +370,6 @@ in-app-purchase module supports the following algorithms:
 - SHA256 digests http://www.w3.org/2001/04/xmlenc#sha256
 
 - SHA512 digests http://www.w3.org/2001/04/xmlenc#sha512
-
-## Facebook Order Fulfillment and Signed Request Parsing
-
-- Facebook Payments Order Fulfillment: https://developers.facebook.com/docs/games_payments/fulfillment#orderfulfillment
-
-- Facebook Signed Request Parsing: https://developers.facebook.com/docs/games/gamesonfacebook/login#parsingsr
 
 - **NOTE:** Payments `Lite` does not support subscription.
 
