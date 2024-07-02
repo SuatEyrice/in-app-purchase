@@ -1,19 +1,16 @@
-'use strict';
+"use strict";
 
-var async = require('./lib/async');
+var async = require("./lib/async");
 
-var apple = require('./lib/apple');
-var google = require('./lib/google');
-var constants = require('./constants');
-var verbose = require('./lib/verbose');
-
-
+var google = require("./lib/google");
+var constants = require("./constants");
+var verbose = require("./lib/verbose");
 
 function handlePromisedFunctionCb(resolve, reject) {
     return function _handlePromisedCallback(error, response) {
         if (error) {
             var errorData = { error: error, status: null, message: null };
-            if (response !== null && typeof response === 'object') {
+            if (response !== null && typeof response === "object") {
                 errorData.status = response.status;
                 errorData.message = response.message;
             }
@@ -27,7 +24,6 @@ module.exports.APPLE = constants.SERVICES.APPLE;
 module.exports.GOOGLE = constants.SERVICES.GOOGLE;
 
 module.exports.config = function (configIn) {
-    apple.readConfig(configIn);
     google.readConfig(configIn);
 };
 
@@ -37,29 +33,29 @@ module.exports.setup = function (cb) {
             module.exports.setup(handlePromisedFunctionCb(resolve, reject));
         });
     }
-    async.series([
-        function (next) {
-            apple.setup(next);
-        },
-        function (next) {
-            google.setup(next);
-        },
-    ], cb);
+    async.series(
+        [
+            function (next) {
+                google.setup(next);
+            },
+        ],
+        cb
+    );
 };
 
 module.exports.getService = function (receipt) {
     if (!receipt) {
-        throw new Error('Receipt was null or undefined');
+        throw new Error("Receipt was null or undefined");
     }
-    
-    if (typeof receipt === 'object') {
+
+    if (typeof receipt === "object") {
         return module.exports.GOOGLE;
     }
     try {
         // receipt could be either Google, Amazon, or Unity (Apple or Google or Amazon)
         const parsed = JSON.parse(receipt);
         if (parsed.signature) {
-        return module.exports.GOOGLE;
+            return module.exports.GOOGLE;
         } else if (receipt.purchaseToken) {
             return module.exports.GOOGLE;
         } else {
@@ -76,7 +72,7 @@ module.exports.validate = function (service, receipt, cb) {
         receipt = service;
         service = module.exports.getService(receipt);
     }
-    if (cb === undefined && typeof receipt === 'function') {
+    if (cb === undefined && typeof receipt === "function") {
         // we are given 2 arguments as: .validate(receipt, cb)
         cb = receipt;
         receipt = service;
@@ -93,14 +89,11 @@ module.exports.validate = function (service, receipt, cb) {
     }
 
     switch (service) {
-        case module.exports.APPLE:
-            apple.validatePurchase(null, receipt, cb);
-            break;
         case module.exports.GOOGLE:
             google.validatePurchase(null, receipt, cb);
             break;
         default:
-            return cb(new Error('invalid service given: ' + service));
+            return cb(new Error("invalid service given: " + service));
     }
 };
 
@@ -110,7 +103,7 @@ module.exports.validateOnce = function (service, secretOrPubKey, receipt, cb) {
         receipt = service;
         service = module.exports.getService(receipt);
     }
-    if (cb === undefined && typeof receipt === 'function') {
+    if (cb === undefined && typeof receipt === "function") {
         // we are given 3 arguemnts as: .validateOnce(receipt, secretPubKey, cb)
         cb = receipt;
         receipt = service;
@@ -129,20 +122,21 @@ module.exports.validateOnce = function (service, secretOrPubKey, receipt, cb) {
     }
 
     if (!secretOrPubKey && service !== module.exports.APPLE) {
-        verbose.log('<.validateOnce>', service, receipt);
-        return cb(new Error('missing secret or public key for dynamic validation:' + service));
+        verbose.log("<.validateOnce>", service, receipt);
+        return cb(
+            new Error(
+                "missing secret or public key for dynamic validation:" + service
+            )
+        );
     }
 
     switch (service) {
-        case module.exports.APPLE:
-            apple.validatePurchase(secretOrPubKey, receipt, cb);
-            break;
         case module.exports.GOOGLE:
             google.validatePurchase(secretOrPubKey, receipt, cb);
             break;
         default:
-            verbose.log('<.validateOnce>', secretOrPubKey, receipt);
-            return cb(new Error('invalid service given: ' + service));
+            verbose.log("<.validateOnce>", secretOrPubKey, receipt);
+            return cb(new Error("invalid service given: " + service));
     }
 };
 
@@ -155,7 +149,9 @@ module.exports.isValidated = function (response) {
 
 module.exports.isExpired = function (purchasedItem) {
     if (!purchasedItem || !purchasedItem.transactionId) {
-        throw new Error('invalid purchased item given:\n' + JSON.stringify(purchasedItem));
+        throw new Error(
+            "invalid purchased item given:\n" + JSON.stringify(purchasedItem)
+        );
     }
     if (purchasedItem.cancellationDate) {
         // it has been cancelled
@@ -174,7 +170,9 @@ module.exports.isExpired = function (purchasedItem) {
 
 module.exports.isCanceled = function (purchasedItem) {
     if (!purchasedItem || !purchasedItem.transactionId) {
-        throw new Error('invalid purchased item given:\n' + JSON.stringify(purchasedItem));
+        throw new Error(
+            "invalid purchased item given:\n" + JSON.stringify(purchasedItem)
+        );
     }
     if (purchasedItem.cancellationDate) {
         // it has been cancelled
@@ -188,8 +186,6 @@ module.exports.getPurchaseData = function (purchaseData, options) {
         return null;
     }
     switch (purchaseData.service) {
-        case module.exports.APPLE:
-            return apple.getPurchaseData(purchaseData, options);
         case module.exports.GOOGLE:
             return google.getPurchaseData(purchaseData, options);
         default:
@@ -200,14 +196,13 @@ module.exports.getPurchaseData = function (purchaseData, options) {
 module.exports.refreshGoogleToken = function (cb) {
     if (!cb && Promise) {
         return new Promise(function (resolve, reject) {
-            module.exports.refreshGoogleToken(handlePromisedFunctionCb(resolve, reject));
+            module.exports.refreshGoogleToken(
+                handlePromisedFunctionCb(resolve, reject)
+            );
         });
     }
     google.refreshToken(cb);
-
 };
-
-
 
 // test use only
 module.exports.reset = function () {

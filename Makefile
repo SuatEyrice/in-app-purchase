@@ -13,23 +13,15 @@ lint:
 
 .PHONY: test
 test:
-	./node_modules/mocha/bin/mocha test/apple.js -R spec -b --timeout=5000 --path=false
-	./node_modules/mocha/bin/mocha test/google.js -R spec -b --path=false --pk=false
-.PHONY: aptest
-aptest:
-	./node_modules/mocha/bin/mocha test/apple.js -R spec -b --timeout=5000 --path=false
+	npx mocha test/google.js -R spec -b --path=false --pk=false
 
 .PHONY: gotest
 gotest:
-	./node_modules/mocha/bin/mocha test/google.js -R spec -b --path=false --pk=false
+	npx mocha test/google.js -R spec -b --path=false --pk=false
 
 
-
-.PHONY: test-apple
-test-apple:
-	./node_modules/mocha/bin/mocha test/apple.js -R spec -b --timeout=5000 --path=$(path)
 
 .PHONY: test-google
 test-google:
-	./node_modules/mocha/bin/mocha test/google.js -R spec -b --path=$(path) --pk=$(pk)
+	npx mocha test/google.js -R spec -b --path=$(path) --pk=$(pk)
 
