@@ -11,7 +11,7 @@
   "url": "https://github.com/voltrue2/in-app-purchase.git"
  },
  "dependencies": {
-  "jose": "^5.9.6",
+  "jsonwebtoken": "^9.0.2",
   "request": "^2.88.2"
  },
  "devDependencies": {
